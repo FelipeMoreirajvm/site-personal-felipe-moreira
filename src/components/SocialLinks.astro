@@ -1,0 +1,61 @@
+---
+import type { SocialLink } from "../lib/getProfile";
+
+interface Props {
+  links: SocialLink[];
+}
+
+const { links } = Astro.props;
+---
+
+{
+  links.length > 0 && (
+    <nav aria-label="Redes sociais">
+      <ul>
+        {links.map((link) => (
+          <li>
+            <a href={link.url} target="_blank" rel="noopener noreferrer">
+              {link.platform}
+              <span class="sr-only"> (abre em nova aba)</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  )
+}
+
+<style>
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  a {
+    display: inline-block;
+    padding: 0.7rem 1.4rem;
+    border-radius: 999px;
+    background-color: var(--color-text);
+    color: #fff;
+    font-weight: 700;
+    text-decoration: none;
+    transition: background-color 0.25s ease;
+  }
+
+  a:hover {
+    background-color: var(--color-accent);
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+  }
+</style>

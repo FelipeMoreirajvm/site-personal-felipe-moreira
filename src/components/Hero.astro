@@ -1,0 +1,134 @@
+---
+import { Image } from "astro:assets";
+import type { Profile } from "../lib/getProfile";
+
+interface Props {
+  profile: Profile;
+}
+
+const { profile } = Astro.props;
+---
+
+<section class="hero">
+  <div class="portrait">
+    <Image
+      class="photo"
+      src={profile.photo}
+      alt={profile.photoAlt}
+      width={560}
+      height={560}
+      loading="eager"
+    />
+  </div>
+
+  <div class="text">
+    <h1 class="fade-up" style="--delay: 0.2s">{profile.name}</h1>
+    <p class="profession fade-up" style="--delay: 0.35s">
+      {profile.profession}
+    </p>
+    <p class="bio fade-up" style="--delay: 0.5s">{profile.bio}</p>
+    <div class="actions fade-up" style="--delay: 0.65s">
+      <slot />
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+    align-items: center;
+    justify-items: start;
+  }
+
+  /* Foto com anéis, como a lente de uma câmera */
+  .portrait {
+    position: relative;
+    justify-self: center;
+    width: min(15rem, 60vw);
+    aspect-ratio: 1;
+    margin: 2.6rem;
+  }
+
+  .portrait::before,
+  .portrait::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    border: 1px solid var(--color-line);
+    pointer-events: none;
+  }
+
+  .portrait::before {
+    inset: -1.1rem;
+    border-color: var(--color-accent);
+    opacity: 0.55;
+  }
+
+  .portrait::after {
+    inset: -2.4rem;
+  }
+
+  .photo {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 0 0 6px var(--color-surface);
+  }
+
+  h1 {
+    font-size: clamp(2.6rem, 8vw, 4.5rem);
+    font-weight: 700;
+    line-height: 1.05;
+  }
+
+  .profession {
+    margin-top: var(--space-sm);
+    color: var(--color-accent);
+    font-size: 1.2rem;
+    font-weight: 700;
+  }
+
+  .bio {
+    margin-top: var(--space-sm);
+    max-width: 30rem;
+    color: var(--color-text-soft);
+  }
+
+  .actions {
+    margin-top: var(--space-md);
+  }
+
+  @media (min-width: 52rem) {
+    .hero {
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 4rem;
+    }
+
+    .portrait {
+      order: 2;
+      width: min(22rem, 100%);
+    }
+  }
+
+  /* Os anéis surgem uma vez, ao carregar a página */
+  @media (prefers-reduced-motion: no-preference) {
+    .portrait::before,
+    .portrait::after {
+      animation: ring-in 1.1s ease-out both;
+    }
+
+    .portrait::after {
+      animation-delay: 0.2s;
+    }
+
+    @keyframes ring-in {
+      from {
+        opacity: 0;
+        transform: scale(0.9);
+      }
+    }
+  }
+</style>

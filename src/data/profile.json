@@ -1,0 +1,12 @@
+{
+  "name": "Felipe Moreira",
+  "profession": "Engenheiro de Software",
+  "bio": "Graduando em Engenharia de Software (UNIRV) | FilmMaker e Editor de vídeo",
+  "photoAlt": "Retrato de Felipe Moreira",
+   "skills": ["JavaScript", "TypeScript", "Python", "HTML", "CSS", "SQL"],
+  "socialLinks": [
+    { "platform": "Instagram", "url": "https://www.instagram.com/lypeemoreira" },
+    { "platform": "LinkedIn", "url": "https://www.linkedin.com/in/felipe-moreira-39540b402/" },
+    { "platform": "GitHub", "url": "https://github.com/FelipeMoreirajvm" }
+  ]
+}

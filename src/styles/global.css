@@ -1,0 +1,70 @@
+:root {
+  /* Cores */
+  --color-bg: #f2f5f8;
+  --color-surface: #ffffff;
+  --color-text: #0f2236;
+  --color-text-soft: #4b5b6d;
+  --color-accent: #2f6290;
+  --color-accent-strong: #1d4468;
+  --color-line: #c3d0de;
+
+  /* Tipografia */
+  --font-display: "Bricolage Grotesque Variable", system-ui, sans-serif;
+  --font-body: "Manrope Variable", system-ui, -apple-system, "Segoe UI", Roboto,
+    sans-serif;
+
+  /* Espaçamentos */
+  --space-sm: 0.75rem;
+  --space-md: 1.5rem;
+  --space-lg: 3rem;
+
+  /* Largura máxima do conteúdo */
+  --content-width: 64rem;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: 1.0625rem;
+  line-height: 1.65;
+}
+
+h1,
+h2,
+p {
+  margin: 0;
+}
+
+h1,
+h2 {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+a {
+  color: var(--color-accent);
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 3px;
+}

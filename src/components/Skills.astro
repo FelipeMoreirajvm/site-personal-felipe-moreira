@@ -1,0 +1,84 @@
+---
+interface Props {
+  skills: string[];
+}
+
+const { skills } = Astro.props;
+---
+
+{
+  skills.length > 0 && (
+    <section id="tecnologias" aria-labelledby="skills-title">
+      <h2 id="skills-title" class="reveal">
+        Linguagens e tecnologias
+      </h2>
+      <ul>
+        {skills.map((skill, index) => (
+          <li class="reveal" style={`--delay: ${index * 0.08}s`}>
+            <span class="circle">{skill}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )
+}
+
+<style>
+  section {
+    padding: var(--space-lg) 0 4rem;
+    border-top: 1px solid var(--color-line);
+  }
+
+  h2 {
+    margin-bottom: var(--space-lg);
+    font-size: clamp(1.6rem, 4vw, 2.2rem);
+    font-weight: 700;
+  }
+
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.75rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .circle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 6.75rem;
+    height: 6.75rem;
+    padding: 0.5rem;
+    border-radius: 50%;
+    background-color: var(--color-surface);
+    color: var(--color-text);
+    font-weight: 700;
+    font-size: 0.95rem;
+    text-align: center;
+    overflow-wrap: anywhere;
+    /* anel extra, repetindo a ideia da lente da foto */
+    box-shadow:
+      0 0 0 5px var(--color-bg),
+      0 0 0 6px var(--color-line);
+  }
+</style>
+
+<script>
+  const items = document.querySelectorAll<HTMLElement>(".reveal");
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-visible");
+          observer.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0.2 },
+  );
+
+  items.forEach((item) => observer.observe(item));
+</script>
