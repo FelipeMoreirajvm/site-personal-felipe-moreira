@@ -1,37 +1,57 @@
-@media (prefers-reduced-motion: no-preference) {
-  .fade-up {
-    animation: fade-up 0.8s ease-out both;
-    animation-delay: var(--delay, 0s);
+@keyframes letter-up {
+  from {
+    transform: translateY(115%);
   }
+}
 
-  @keyframes fade-up {
-    from {
-      opacity: 0;
-      transform: translateY(14px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  /* Só esconde se o JavaScript estiver ativo (classe "js" no <html>) */
-  .js .reveal {
+@keyframes rise {
+  from {
     opacity: 0;
-    transform: translateY(18px);
-    transition:
-      opacity 0.7s ease-out var(--delay, 0s),
-      transform 0.7s ease-out var(--delay, 0s);
-  }
-
-  .js .reveal.is-visible {
-    opacity: 1;
-    transform: translateY(0);
+    transform: translateY(14px);
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  * {
-    transition: none !important;
+@keyframes ring-pulse {
+  0% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.22);
   }
 }
+
+@keyframes shine {
+  0%,
+  55% {
+    left: -60%;
+  }
+  100% {
+    left: 130%;
+  }
+}
+
+/* Aura: halo dourado sempre aceso + anel que se expande e some */
+@keyframes cta-aura {
+  0% {
+    box-shadow:
+      0 0 0 0 rgba(245, 185, 66, 0.7),
+      0 0 26px rgba(245, 185, 66, 0.4);
+  }
+  70%,
+  100% {
+    box-shadow:
+      0 0 0 22px rgba(245, 185, 66, 0),
+      0 0 26px rgba(245, 185, 66, 0.4);
+  }
+}
+
+/* Halo dourado fixo (não é movimento, vale para todo mundo) */
+.cta {
+  box-shadow: 0 0 26px rgba(245, 185, 66, 0.4);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Nome: cada letra sobe em sequência, uma única vez */
+  .letter {

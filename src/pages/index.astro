@@ -2,7 +2,6 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Hero from "../components/Hero.astro";
 import SocialLinks from "../components/SocialLinks.astro";
-import Skills from "../components/Skills.astro";
 import { getProfile } from "../lib/getProfile";
 
 const profile = await getProfile();
@@ -12,27 +11,24 @@ const profile = await getProfile();
   title={`${profile.name} | ${profile.profession}`}
   description={profile.bio}
 >
-  <main>
-    <div class="intro">
-      <Hero profile={profile}>
-        <SocialLinks links={profile.socialLinks} />
-      </Hero>
-    </div>
-    <Skills skills={profile.skills} />
+  <main class="container intro">
+    <Hero profile={profile}>
+      <SocialLinks links={profile.socialLinks} />
+    </Hero>
   </main>
 </BaseLayout>
 
 <style>
-  main {
-    max-width: var(--content-width);
-    margin: 0 auto;
-    padding: 0 var(--space-md);
-  }
-
   .intro {
     display: flex;
     align-items: center;
-    min-height: 90vh;
-    padding: var(--space-lg) 0;
+    min-height: 100vh;
+    min-height: 100svh;
+    padding-top: var(--space-md);
+    padding-bottom: var(--space-md);
+  }
+
+  .intro > :global(.hero) {
+    width: 100%;
   }
 </style>

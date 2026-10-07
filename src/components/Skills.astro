@@ -15,7 +15,9 @@ const { skills } = Astro.props;
       <ul>
         {skills.map((skill, index) => (
           <li class="reveal" style={`--delay: ${index * 0.08}s`}>
-            <span class="circle">{skill}</span>
+            <span class="circle float" style={`--float-delay: ${-index * 0.7}s`}>
+              {skill}
+            </span>
           </li>
         ))}
       </ul>
@@ -25,20 +27,20 @@ const { skills } = Astro.props;
 
 <style>
   section {
-    padding: var(--space-lg) 0 4rem;
-    border-top: 1px solid var(--color-line);
+    padding: 4.5rem 0;
   }
 
   h2 {
     margin-bottom: var(--space-lg);
-    font-size: clamp(1.6rem, 4vw, 2.2rem);
-    font-weight: 700;
+    font-size: clamp(2rem, 7vw, 3.6rem);
+    font-weight: 800;
+    line-height: 1.05;
   }
 
   ul {
     display: flex;
     flex-wrap: wrap;
-    gap: 1.75rem;
+    gap: 1.9rem;
     margin: 0;
     padding: 0;
     list-style: none;
@@ -52,33 +54,22 @@ const { skills } = Astro.props;
     height: 6.75rem;
     padding: 0.5rem;
     border-radius: 50%;
-    background-color: var(--color-surface);
+    background-color: var(--color-bg);
     color: var(--color-text);
-    font-weight: 700;
+    font-weight: 800;
     font-size: 0.95rem;
     text-align: center;
     overflow-wrap: anywhere;
-    /* anel extra, repetindo a ideia da lente da foto */
     box-shadow:
-      0 0 0 5px var(--color-bg),
-      0 0 0 6px var(--color-line);
+      0 0 0 5px var(--color-bg-deep),
+      0 0 0 7px var(--color-sun);
+    transition:
+      background-color 0.25s ease,
+      color 0.25s ease;
+  }
+
+  li:hover .circle {
+    background-color: var(--color-sun);
+    color: var(--color-ink);
   }
 </style>
-
-<script>
-  const items = document.querySelectorAll<HTMLElement>(".reveal");
-
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add("is-visible");
-          observer.unobserve(entry.target);
-        }
-      });
-    },
-    { threshold: 0.2 },
-  );
-
-  items.forEach((item) => observer.observe(item));
-</script>

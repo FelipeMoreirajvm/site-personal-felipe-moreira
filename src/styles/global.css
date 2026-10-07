@@ -1,12 +1,11 @@
 :root {
-  /* Cores */
-  --color-bg: #f2f5f8;
-  --color-surface: #ffffff;
-  --color-text: #0f2236;
-  --color-text-soft: #4b5b6d;
-  --color-accent: #2f6290;
-  --color-accent-strong: #1d4468;
-  --color-line: #c3d0de;
+  /* Paleta */
+  --color-bg: #101828; /* azul-marinho profundo */
+  --color-surface: #1d2939; /* cinza azulado */
+  --color-blue: #2563eb; /* azul elétrico */
+  --color-text: #f8fafc; /* branco gelo */
+  --color-gold: #f5b942; /* dourado suave */
+  --color-text-soft: rgba(248, 250, 252, 0.74);
 
   /* Tipografia */
   --font-display: "Bricolage Grotesque Variable", system-ui, sans-serif;
@@ -19,7 +18,7 @@
   --space-lg: 3rem;
 
   /* Largura máxima do conteúdo */
-  --content-width: 64rem;
+  --content-width: 68rem;
 }
 
 *,
@@ -30,12 +29,23 @@
 
 html {
   -webkit-text-size-adjust: 100%;
+  background-color: var(--color-bg);
 }
 
 body {
   margin: 0;
   min-height: 100vh;
-  background-color: var(--color-bg);
+  overflow-x: hidden;
+  overflow-x: clip;
+  /* gradiente discreto: um brilho suave de cinza azulado no canto superior direito */
+  background:
+    radial-gradient(
+      60rem 36rem at 90% 0%,
+      rgba(29, 41, 57, 0.95),
+      rgba(29, 41, 57, 0) 70%
+    ),
+    var(--color-bg);
+  background-repeat: no-repeat;
   color: var(--color-text);
   font-family: var(--font-body);
   font-size: 1.0625rem;
@@ -61,10 +71,16 @@ img {
 }
 
 a {
-  color: var(--color-accent);
+  color: var(--color-text);
 }
 
 :focus-visible {
-  outline: 3px solid var(--color-accent);
+  outline: 3px solid var(--color-text);
   outline-offset: 3px;
+}
+
+.container {
+  max-width: var(--content-width);
+  margin: 0 auto;
+  padding: 0 var(--space-md);
 }
