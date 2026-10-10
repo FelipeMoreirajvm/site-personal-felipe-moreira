@@ -1,6 +1,6 @@
 # Site Felipe Moreira
 
-Portfólio pessoal de Felipe Moreira, Engenheiro de Software. É uma página única com apresentação, foto e links para as redes sociais.
+Portfólio pessoal de Felipe Moreira, acadêmico de Engenharia de Software. É uma página única com apresentação, foto e links para as redes sociais.
 
 ## Tecnologias
 
