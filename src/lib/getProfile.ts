@@ -40,6 +40,15 @@ const PROFILE_QUERY = `*[_type == "profile"][0]{
   socialLinks
 }`;
 
+// Ordem fixa das redes na tela. Nomes em minúsculas.
+// Redes que não estão na lista vão para o fim, na ordem do painel.
+const SOCIAL_ORDER = ["whatsapp", "instagram", "linkedin", "github", "discord"];
+
+function socialRank(link: SocialLink): number {
+  const index = SOCIAL_ORDER.indexOf(link.platform.trim().toLowerCase());
+  return index === -1 ? SOCIAL_ORDER.length : index;
+}
+
 function isHttpsUrl(value: string): boolean {
   try {
     return new URL(value).protocol === "https:";
@@ -59,11 +68,13 @@ export async function getProfile(): Promise<Profile> {
 
   const name = data.name;
 
-  const socialLinks: SocialLink[] = (data.socialLinks ?? []).flatMap((link) =>
-    link.platform && link.url && isHttpsUrl(link.url)
-      ? [{ platform: link.platform, url: link.url }]
-      : [],
-  );
+  const socialLinks: SocialLink[] = (data.socialLinks ?? [])
+    .flatMap((link) =>
+      link.platform && link.url && isHttpsUrl(link.url)
+        ? [{ platform: link.platform, url: link.url }]
+        : [],
+    )
+    .sort((a, b) => socialRank(a) - socialRank(b));
 
   const photoUrl = (width: number) =>
     urlFor(data.photo as SanityImageSource)

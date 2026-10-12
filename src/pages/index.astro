@@ -2,7 +2,6 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Hero from "../components/Hero.astro";
 import SocialIcons from "../components/SocialIcons.astro";
-import About from "../components/About.astro";
 import { getProfile } from "../lib/getProfile";
 
 const profile = await getProfile();
@@ -16,6 +15,5 @@ const profile = await getProfile();
     <Hero profile={profile}>
       <SocialIcons links={profile.socialLinks} />
     </Hero>
-    <About profile={profile} />
   </main>
 </BaseLayout>

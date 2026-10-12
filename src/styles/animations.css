@@ -1,38 +1,76 @@
+/* ===== Cortina de entrada (aparece só na primeira carga) ===== */
+.curtain {
+  display: none;
+}
+
+@keyframes line-draw {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes line-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes shutter-top {
+  to {
+    transform: translateY(-101%);
+  }
+}
+
+@keyframes shutter-bottom {
+  to {
+    transform: translateY(101%);
+  }
+}
+
+/* ===== Entradas dos elementos ===== */
 @keyframes letter-up {
   from {
     transform: translateY(115%);
+    filter: blur(10px);
   }
 }
 
 @keyframes rise {
   from {
     opacity: 0;
-    transform: translateY(14px);
+    transform: translateY(18px);
   }
 }
 
-@keyframes ring-pulse {
+@keyframes drop {
+  from {
+    opacity: 0;
+    transform: translateY(-16px);
+  }
+}
+
+@keyframes pop {
   0% {
-    opacity: 0.5;
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  70% {
+    transform: scale(1.12);
+  }
+  100% {
+    opacity: 1;
     transform: scale(1);
   }
-  100% {
-    opacity: 0;
-    transform: scale(1.22);
+}
+
+@keyframes bg-settle {
+  from {
+    opacity: 0.35;
+    transform: scale(1.15);
   }
 }
 
-@keyframes shine {
-  0%,
-  55% {
-    left: -60%;
-  }
-  100% {
-    left: 130%;
-  }
-}
-
-/* Aura: halo dourado sempre aceso + anel que se expande e some */
+/* ===== Botão destacado: aura e brilho ===== */
 @keyframes cta-aura {
   0% {
     box-shadow:
@@ -47,11 +85,114 @@
   }
 }
 
+@keyframes shine {
+  0%,
+  55% {
+    left: -60%;
+  }
+  100% {
+    left: 130%;
+  }
+}
+
 /* Halo dourado fixo (não é movimento, vale para todo mundo) */
 .cta {
   box-shadow: 0 0 26px rgba(245, 185, 66, 0.4);
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  /* Nome: cada letra sobe em sequência, uma única vez */
+  /* Enquanto a cortina toca, os elementos esperam 1 segundo para entrar */
+  body:has(.curtain:not([data-late])) {
+    --base: 1s;
+  }
+
+  .curtain {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    pointer-events: none;
+  }
+
+  .curtain.is-done {
+    display: none;
+  }
+
+  .curtain .shutter {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 50.5%;
+    background-color: var(--color-bg);
+  }
+
+  .curtain .top {
+    top: 0;
+    animation: shutter-top 0.75s cubic-bezier(0.76, 0, 0.24, 1) 0.5s both;
+  }
+
+  .curtain .bottom {
+    bottom: 0;
+    animation: shutter-bottom 0.75s cubic-bezier(0.76, 0, 0.24, 1) 0.5s both;
+  }
+
+  .curtain .line {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(50% - 1px);
+    height: 2px;
+    background-color: var(--color-gold);
+    transform: scaleX(0);
+    animation:
+      line-draw 0.5s ease-out both,
+      line-out 0.2s ease 0.5s forwards;
+  }
+
+  .rise {
+    animation: rise 0.8s ease-out both;
+    animation-delay: calc(var(--base, 0s) + var(--delay, 0s));
+  }
+
+  .drop {
+    animation: drop 0.7s ease-out both;
+    animation-delay: calc(var(--base, 0s) + 0.15s);
+  }
+
+  .pop {
+    animation: pop 0.6s ease-out both;
+    animation-delay: calc(var(--base, 0s) + var(--delay, 0s));
+  }
+
   .letter {
+    animation: letter-up 1s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+    animation-delay: calc(var(--base, 0s) + var(--i, 0) * 0.05s + 0.15s);
+  }
+
+  .bg-settle {
+    animation: bg-settle 2.6s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    animation-delay: calc(var(--base, 0s) * 0.6);
+  }
+
+  .cta {
+    animation: cta-aura 2.2s ease-out infinite;
+  }
+
+  .shine::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -60%;
+    width: 40%;
+    background: linear-gradient(
+      100deg,
+      transparent,
+      rgba(255, 255, 255, 0.75),
+      transparent
+    );
+    transform: skewX(-20deg);
+    animation: shine 3.2s ease-in-out infinite;
+    pointer-events: none;
+  }
+}

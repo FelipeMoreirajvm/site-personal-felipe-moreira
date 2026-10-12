@@ -1,0 +1,41 @@
+---
+interface Props {
+  title: string;
+  description?: string;
+  url?: string;
+  image?: { src: string; alt: string };
+  linkLabel?: string;
+}
+
+const { title, description, url, image, linkLabel = "Ver" } = Astro.props;
+
+const Tag = url ? "a" : "div";
+const linkProps = url
+  ? { href: url, target: "_blank", rel: "noopener noreferrer" }
+  : {};
+---
+
+<Tag class="card" {...linkProps}>
+  {
+    image && (
+      <img
+        class="card-media"
+        src={image.src}
+        alt={image.alt}
+        width="800"
+        height="450"
+        loading="lazy"
+      />
+    )
+  }
+  <h3>{title}</h3>
+  {description && <p>{description}</p>}
+  {
+    url && (
+      <span class="more">
+        {linkLabel}
+        <span class="sr-only"> (abre em nova aba)</span>
+      </span>
+    )
+  }
+</Tag>

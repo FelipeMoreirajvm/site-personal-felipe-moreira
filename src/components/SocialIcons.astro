@@ -1,21 +1,12 @@
 ---
 import type { SocialLink } from "../lib/getProfile";
+import { getIcon, isHighlighted } from "../lib/social";
 
 interface Props {
   links: SocialLink[];
 }
 
 const { links } = Astro.props;
-
-// Desenhos (viewBox 24x24). A chave é o nome da rede em minúsculas.
-const icons: Record<string, string> = {
-  instagram:
-    '<rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>',
-  linkedin:
-    '<path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/>',
-  github:
-    '<path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>',
-};
 ---
 
 {
@@ -23,13 +14,14 @@ const icons: Record<string, string> = {
     <nav aria-label="Redes sociais">
       <ul>
         {links.map((link, index) => {
-          const icon = icons[link.platform.trim().toLowerCase()];
+          const icon = getIcon(link.platform);
+          const highlighted = isHighlighted(link);
           return (
-            <li>
+            <li class="pop" style={`--delay: ${1.5 + index * 0.1}s`}>
               <a
                 class:list={[
                   "icon-btn",
-                  index === 0 && "primary cta shine",
+                  highlighted && "primary shine",
                   !icon && "text",
                 ]}
                 href={link.url}
@@ -39,7 +31,13 @@ const icons: Record<string, string> = {
                 title={link.platform}
               >
                 {icon ? (
-                  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={icon} />
+                  <svg
+                    class={icon.kind}
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                    focusable="false"
+                    set:html={icon.markup}
+                  />
                 ) : (
                   link.platform
                 )}
@@ -56,6 +54,7 @@ const icons: Record<string, string> = {
   ul {
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     gap: 0.75rem;
     margin: 0;
     padding: 0;
@@ -92,9 +91,12 @@ const icons: Record<string, string> = {
     transform: translateY(-2px);
   }
 
-  .icon-btn svg {
+  svg {
     width: 1.2rem;
     height: 1.2rem;
+  }
+
+  svg.stroke {
     fill: none;
     stroke: currentColor;
     stroke-width: 2;
@@ -102,15 +104,50 @@ const icons: Record<string, string> = {
     stroke-linejoin: round;
   }
 
-  /* Botão principal: dourado */
+  svg.fill {
+    fill: currentColor;
+    stroke: none;
+  }
+
+  /* Botão destacado (WhatsApp): maior, dourado e com aura mais forte */
   .primary {
+    width: 3.4rem;
+    height: 3.4rem;
     border-color: var(--color-gold);
     background-color: var(--color-gold);
     color: var(--color-bg);
+    box-shadow: 0 0 34px rgba(245, 185, 66, 0.6);
+  }
+
+  .primary svg {
+    width: 1.45rem;
+    height: 1.45rem;
   }
 
   .primary:hover {
     border-color: #f8c968;
     background-color: #f8c968;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .primary {
+      animation: wa-aura 2.2s ease-out infinite;
+    }
+  }
+</style>
+
+<style is:global>
+  @keyframes wa-aura {
+    0% {
+      box-shadow:
+        0 0 0 0 rgba(245, 185, 66, 0.8),
+        0 0 34px rgba(245, 185, 66, 0.6);
+    }
+    70%,
+    100% {
+      box-shadow:
+        0 0 0 28px rgba(245, 185, 66, 0),
+        0 0 34px rgba(245, 185, 66, 0.6);
+    }
   }
 </style>

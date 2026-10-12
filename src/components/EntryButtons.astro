@@ -1,0 +1,96 @@
+---
+const buttons = [
+  {
+    href: "/engenheiro-de-software",
+    transitionName: "panel-software",
+    theme: "software",
+    label: "Engenheiro de Software",
+  },
+  {
+    href: "/filmmaker",
+    transitionName: "panel-film",
+    theme: "film",
+    label: "Filmmaker",
+  },
+];
+---
+
+<div class="entries">
+  {
+    buttons.map((button, index) => (
+      <div class="item rise" style={`--delay: ${1.05 + index * 0.12}s`}>
+        <a
+          class={`entry ${button.theme}`}
+          href={button.href}
+          transition:name={button.transitionName}
+        >
+          <span>{button.label}</span>
+          <svg class="arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M5 12h14M13 6l6 6-6 6" />
+          </svg>
+        </a>
+      </div>
+    ))
+  }
+</div>
+
+<style>
+  .entries {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.85rem;
+    margin-top: 2rem;
+  }
+
+  .entry {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 1.7rem;
+    border: 1.5px solid var(--edge);
+    border-radius: 999px;
+    background-color: rgba(16, 24, 40, 0.45);
+    backdrop-filter: blur(6px);
+    color: var(--color-text);
+    font-size: 1.05rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition:
+      background-color 0.25s ease,
+      color 0.25s ease,
+      transform 0.25s ease;
+  }
+
+  .entry.software {
+    --edge: var(--color-blue);
+    --fill: var(--color-blue);
+    --on-fill: var(--color-text);
+  }
+
+  .entry.film {
+    --edge: var(--color-gold);
+    --fill: var(--color-gold);
+    --on-fill: var(--color-bg);
+  }
+
+  .entry:hover {
+    background-color: var(--fill);
+    color: var(--on-fill);
+    transform: translateY(-3px);
+  }
+
+  .arrow {
+    width: 1.1rem;
+    height: 1.1rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: transform 0.25s ease;
+  }
+
+  .entry:hover .arrow {
+    transform: translateX(4px);
+  }
+</style>

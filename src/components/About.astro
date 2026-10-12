@@ -9,12 +9,12 @@ const { profile } = Astro.props;
 ---
 
 <section class="about container" id="sobre" aria-labelledby="about-title">
-  <div class="about-text">
+  <div class="about-text rise" style="--delay: 0.2s">
     <h2 id="about-title">Sobre</h2>
     <p>{profile.bio}</p>
   </div>
 
-  <div class="portrait">
+  <div class="portrait rise" style="--delay: 0.4s">
     <img
       class="photo"
       src={profile.photo.src}
@@ -23,7 +23,6 @@ const { profile } = Astro.props;
       alt={profile.photo.alt}
       width="560"
       height="560"
-      loading="lazy"
     />
   </div>
 </section>
@@ -34,13 +33,13 @@ const { profile } = Astro.props;
     grid-template-columns: 1fr;
     gap: 3rem;
     align-items: center;
-    padding-top: 5rem;
-    padding-bottom: 6rem;
+    padding-top: 3rem;
+    padding-bottom: 4rem;
   }
 
   h2 {
     margin-bottom: var(--space-md);
-    font-size: clamp(2rem, 7vw, 3.2rem);
+    font-size: clamp(2.4rem, 8vw, 4rem);
     font-weight: 800;
     line-height: 1.05;
   }
@@ -59,7 +58,6 @@ const { profile } = Astro.props;
     margin: 1rem;
   }
 
-  /* anel fino em azul elétrico ao redor da foto */
   .portrait::before {
     content: "";
     position: absolute;

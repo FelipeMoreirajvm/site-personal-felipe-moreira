@@ -1,0 +1,67 @@
+---
+import PageLayout from "../layouts/PageLayout.astro";
+import Card from "../components/Card.astro";
+import { getFilmmakerPage, getSoftwarePage } from "../lib/getPages";
+import { getProfile } from "../lib/getProfile";
+import "../styles/tabs.css";
+
+const [profile, software, film] = await Promise.all([
+  getProfile(),
+  getSoftwarePage(),
+  getFilmmakerPage(),
+]);
+
+const hasContent = software.projects.length > 0 || film.works.length > 0;
+---
+
+<PageLayout
+  title={`Projetos | ${profile.name}`}
+  description={`Projetos de software e trabalhos em vídeo de ${profile.name}.`}
+>
+  <div class="container page">
+    <h1 class="page-title rise" style="--delay: 0.2s">Projetos</h1>
+
+    {!hasContent && <p class="prose empty rise" style="--delay: 0.4s">Em breve.</p>}
+
+    {
+      software.projects.length > 0 && (
+        <section class="group rise" data-theme="software" style="--delay: 0.35s">
+          <h2 class="group-title">Software</h2>
+          <ul class="cards">
+            {software.projects.map((project) => (
+              <li>
+                <Card
+                  title={project.name}
+                  description={project.description}
+                  url={project.url}
+                  linkLabel="Ver projeto"
+                />
+              </li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
+
+    {
+      film.works.length > 0 && (
+        <section class="group rise" data-theme="film" style="--delay: 0.5s">
+          <h2 class="group-title">Filmmaker</h2>
+          <ul class="cards">
+            {film.works.map((work) => (
+              <li>
+                <Card
+                  title={work.title}
+                  description={work.description}
+                  url={work.url}
+                  image={work.cover}
+                  linkLabel="Assistir"
+                />
+              </li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
+  </div>
+</PageLayout>

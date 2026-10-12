@@ -1,5 +1,6 @@
 ---
 import type { SocialLink } from "../lib/getProfile";
+import { isHighlighted } from "../lib/social";
 
 interface Props {
   links: SocialLink[];
@@ -12,10 +13,10 @@ const { links } = Astro.props;
   links.length > 0 && (
     <nav aria-label="Redes sociais">
       <ul>
-        {links.map((link, index) => (
+        {links.map((link) => (
           <li>
             <a
-              class:list={["btn", index === 0 && "primary cta shine"]}
+              class:list={["btn", isHighlighted(link) && "primary cta shine"]}
               href={link.url}
               target="_blank"
               rel="noopener noreferrer"

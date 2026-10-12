@@ -1,0 +1,21 @@
+---
+import PageLayout from "../layouts/PageLayout.astro";
+import About from "../components/About.astro";
+import EntryButtons from "../components/EntryButtons.astro";
+import { getProfile } from "../lib/getProfile";
+
+const profile = await getProfile();
+---
+
+<PageLayout title={`Sobre | ${profile.name}`} description={profile.bio}>
+  <About profile={profile} />
+  <div class="container buttons">
+    <EntryButtons />
+  </div>
+</PageLayout>
+
+<style>
+  .buttons {
+    padding-bottom: 6rem;
+  }
+</style>

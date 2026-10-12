@@ -1,5 +1,7 @@
 ---
 import type { Profile } from "../lib/getProfile";
+import SiteNav from "./SiteNav.astro";
+import EntryButtons from "./EntryButtons.astro";
 
 interface Props {
   profile: Profile;
@@ -16,16 +18,11 @@ const words = profile.name.split(" ").map((word, wordIndex) => ({
 ---
 
 <section class="hero" id="inicio">
-  <nav class="topbar rise" style="--delay: 0.1s" aria-label="Principal">
-    <ul>
-      <li><a href="/" aria-current="page">Início</a></li>
-      <li><a href="#sobre">Sobre</a></li>
-      <li><a href="/engenheiro-de-software">Engenheiro de Software</a></li>
-      <li><a href="/filmmaker">Filmmaker</a></li>
-    </ul>
-  </nav>
+  <div class="bg bg-settle" aria-hidden="true"></div>
 
-  <div class="content">
+  <SiteNav />
+
+  <div class="container main">
     <h1 aria-label={profile.name}>
       {
         words.map((word) => (
@@ -40,30 +37,17 @@ const words = profile.name.split(" ").map((word, wordIndex) => ({
       }
     </h1>
 
-    <p class="profession rise" style="--delay: 0.9s">{profile.profession}</p>
-
-    <div class="entries rise" style="--delay: 1.05s">
-      <a
-        class="pill"
-        href="/engenheiro-de-software"
-        transition:name="panel-software"
-      >
-        Engenheiro de Software
-      </a>
-      <a class="pill" href="/filmmaker" transition:name="panel-film">
-        Filmmaker
-      </a>
-    </div>
+    <EntryButtons />
   </div>
 
-  <div class="social rise" style="--delay: 1.2s">
+  <div class="container social">
     <slot />
   </div>
 </section>
 
 <style>
   .hero {
-    /* Para trocar a imagem de fundo, mude só esta linha (veja as instruções) */
+    /* Para trocar a imagem de fundo, mude só esta linha */
     --hero-image: url("/hero-bg.jpg");
     --overlay: linear-gradient(
       90deg,
@@ -72,64 +56,38 @@ const words = profile.name.split(" ").map((word, wordIndex) => ({
       rgba(16, 24, 40, 0.15) 100%
     );
 
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
     display: grid;
     grid-template-rows: auto 1fr auto;
     min-height: 100vh;
     min-height: 100svh;
+    background-color: var(--color-bg);
+  }
+
+  .bg {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
     background:
-      var(--overlay), var(--hero-image) center / cover no-repeat,
-      var(--color-bg);
+      var(--overlay), var(--hero-image) center / cover no-repeat;
   }
 
-  /* Cada bloco fica alinhado à mesma coluna central da página */
-  .hero > * {
+  /* Faz o nome, os botões e os ícones ocuparem a coluna inteira,
+     alinhados à esquerda com o menu */
+  .main,
+  .social {
     width: 100%;
-    max-width: var(--content-width);
-    margin-inline: auto;
-    padding-inline: var(--space-md);
   }
 
-  /* Menu superior */
-  .topbar {
-    padding-top: 1.5rem;
-    padding-bottom: 1rem;
-  }
-
-  .topbar ul {
-    display: flex;
-    gap: 1.75rem;
-    margin: 0;
-    padding: 0.25rem 0;
-    list-style: none;
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-
-  .topbar a {
-    display: inline-block;
-    padding: 0.35rem 0;
-    border-bottom: 2px solid transparent;
-    color: var(--color-text);
-    font-size: 0.92rem;
-    font-weight: 600;
-    text-decoration: none;
-    white-space: nowrap;
-    transition: border-color 0.25s ease;
-  }
-
-  .topbar a:hover,
-  .topbar a[aria-current="page"] {
-    border-bottom-color: var(--color-blue);
-  }
-
-  /* Nome e cargo */
-  .content {
+  .main {
     align-self: center;
     padding-block: 2rem;
   }
 
   h1 {
-    font-size: clamp(3.4rem, 13vw, 7.5rem);
+    font-size: clamp(3.6rem, 14vw, 8.5rem);
     line-height: 0.95;
     text-transform: uppercase;
   }
@@ -142,7 +100,7 @@ const words = profile.name.split(" ").map((word, wordIndex) => ({
   }
 
   .word.light {
-    font-size: 0.55em;
+    font-size: 0.5em;
     font-weight: 300;
     letter-spacing: 0.08em;
   }
@@ -155,43 +113,6 @@ const words = profile.name.split(" ").map((word, wordIndex) => ({
     display: inline-block;
   }
 
-  .profession {
-    margin-top: 1.25rem;
-    color: var(--color-text-soft);
-    font-size: 0.95rem;
-    font-weight: 500;
-    letter-spacing: 0.22em;
-  }
-
-  /* Botões de contorno */
-  .entries {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-    margin-top: var(--space-md);
-  }
-
-  .pill {
-    padding: 0.7rem 1.6rem;
-    border: 1px solid rgba(248, 250, 252, 0.7);
-    border-radius: 999px;
-    background-color: rgba(16, 24, 40, 0.35);
-    color: var(--color-text);
-    font-weight: 600;
-    text-decoration: none;
-    transition:
-      background-color 0.25s ease,
-      border-color 0.25s ease,
-      transform 0.25s ease;
-  }
-
-  .pill:hover {
-    border-color: var(--color-blue);
-    background-color: var(--color-blue);
-    transform: translateY(-2px);
-  }
-
-  /* Ícones das redes, embaixo à esquerda */
   .social {
     padding-top: 1rem;
     padding-bottom: 2rem;

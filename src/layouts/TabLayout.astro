@@ -1,0 +1,55 @@
+---
+import BaseLayout from "./BaseLayout.astro";
+import SiteNav from "../components/SiteNav.astro";
+import SocialLinks from "../components/SocialLinks.astro";
+import type { SocialLink } from "../lib/getProfile";
+import "../styles/tabs.css";
+
+interface Props {
+  title: string;
+  description: string;
+  theme: "software" | "film";
+  transitionName: string;
+  headline: string;
+  intro?: string;
+  socialLinks: SocialLink[];
+}
+
+const { title, description, theme, transitionName, headline, intro, socialLinks } =
+  Astro.props;
+
+// Imagem de cabeçalho de cada aba (provisórias, trocáveis na pasta public)
+const images = {
+  software: "/software-bg.svg",
+  film: "/film-bg.svg",
+} as const;
+---
+
+<BaseLayout title={title} description={description}>
+  <div class="tab" data-theme={theme}>
+    <SiteNav />
+    <div class="container">
+      <header
+        class="tab-hero"
+        style={`--tab-image: url('${images[theme]}')`}
+        transition:name={transitionName}
+      >
+        <h1 class="rise" style="--delay: 0.15s">{headline}</h1>
+        {intro && <p class="intro rise" style="--delay: 0.3s">{intro}</p>}
+      </header>
+
+      <main>
+        <slot />
+      </main>
+
+      {
+        socialLinks.length > 0 && (
+          <footer class="section rise" style="--delay: 0.5s">
+            <h2 class="section-title">Contato</h2>
+            <SocialLinks links={socialLinks} />
+          </footer>
+        )
+      }
+    </div>
+  </div>
+</BaseLayout>

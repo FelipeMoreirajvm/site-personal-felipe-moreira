@@ -1,0 +1,18 @@
+---
+import BaseLayout from "./BaseLayout.astro";
+import SiteNav from "../components/SiteNav.astro";
+
+interface Props {
+  title: string;
+  description: string;
+}
+
+const { title, description } = Astro.props;
+---
+
+<BaseLayout title={title} description={description}>
+  <SiteNav />
+  <main>
+    <slot />
+  </main>
+</BaseLayout>

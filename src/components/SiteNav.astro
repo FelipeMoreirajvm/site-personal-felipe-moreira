@@ -1,0 +1,59 @@
+---
+const path = Astro.url.pathname.replace(/\/+$/, "") || "/";
+
+const items = [
+  { href: "/", label: "Início" },
+  { href: "/sobre", label: "Sobre" },
+  { href: "/projetos", label: "Projetos" },
+];
+---
+
+<header class="site-nav">
+  <nav class="container drop" aria-label="Principal">
+    <ul>
+      {
+        items.map((item) => (
+          <li>
+            <a href={item.href} aria-current={path === item.href ? "page" : undefined}>
+              {item.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+</header>
+
+<style>
+  .site-nav {
+    padding-top: 1.5rem;
+    padding-bottom: 1rem;
+  }
+
+  ul {
+    display: flex;
+    gap: 1.75rem;
+    margin: 0;
+    padding: 0.25rem 0;
+    list-style: none;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  a {
+    display: inline-block;
+    padding: 0.35rem 0;
+    border-bottom: 2px solid transparent;
+    color: var(--color-text);
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: border-color 0.25s ease;
+  }
+
+  a:hover,
+  a[aria-current="page"] {
+    border-bottom-color: var(--color-blue);
+  }
+</style>
