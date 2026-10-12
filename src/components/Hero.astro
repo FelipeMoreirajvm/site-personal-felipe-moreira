@@ -1,5 +1,4 @@
 ---
-import { Image } from "astro:assets";
 import type { Profile } from "../lib/getProfile";
 
 interface Props {
@@ -19,13 +18,16 @@ const words = profile.name
   <div class="portrait" data-tilt>
     <span class="ring ring-static" aria-hidden="true"></span>
     <span class="ring ring-pulse" aria-hidden="true"></span>
-    <Image
+    <img
       class="photo"
-      src={profile.photo}
-      alt={profile.photoAlt}
-      width={560}
-      height={560}
+      src={profile.photo.src}
+      srcset={profile.photo.srcset}
+      sizes="(min-width: 48rem) 20rem, 11rem"
+      alt={profile.photo.alt}
+      width="560"
+      height="560"
       loading="eager"
+      fetchpriority="high"
     />
   </div>
 
