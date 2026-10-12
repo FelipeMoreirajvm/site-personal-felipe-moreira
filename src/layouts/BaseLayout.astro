@@ -29,34 +29,99 @@ const { title, description } = Astro.props;
     <ClientRouter />
   </head>
   <body>
-    <div class="curtain" data-curtain transition:persist="curtain" aria-hidden="true">
-      <span class="shutter top"></span>
-      <span class="shutter bottom"></span>
-      <span class="line"></span>
+    <div class="ambient" data-ambient transition:persist="ambient" aria-hidden="true"></div>
+    <div class="cursor" data-cursor transition:persist="cursor" aria-hidden="true"></div>
+
+    <div class="intro" data-intro transition:persist="intro" aria-hidden="true">
+      <div class="frame">
+        <span class="corner tl"></span>
+        <span class="corner tr"></span>
+        <span class="corner bl"></span>
+        <span class="corner br"></span>
+        <span class="rec"><i></i>REC</span>
+        <span class="count"></span>
+      </div>
+      <span class="focus"></span>
     </div>
+
     <slot />
   </body>
 </html>
 
 <script>
-  // A cortina fica escondida depois de tocar. Como ela persiste entre páginas,
-  // não volta a aparecer ao navegar.
-  const curtain = document.querySelector<HTMLElement>("[data-curtain]");
+  import "../scripts/interactions";
 
-  if (curtain) {
-    curtain.addEventListener("animationend", (event) => {
-      const target = event.target as HTMLElement;
-      if (target.classList.contains("shutter")) {
-        curtain.classList.add("is-done");
+  // A abertura some depois de tocar. Como ela persiste entre páginas,
+  // não volta a aparecer ao trocar de aba.
+  const intro = document.querySelector<HTMLElement>("[data-intro]");
+
+  if (intro) {
+    intro.addEventListener("animationend", (event) => {
+      if (event.animationName === "intro-resolve") {
+        intro.classList.add("is-done");
       }
     });
 
     // Depois que toda a entrada terminou, as próximas páginas não esperam mais
-    window.setTimeout(() => curtain.setAttribute("data-late", ""), 3500);
+    window.setTimeout(() => intro.setAttribute("data-late", ""), 4500);
   }
 </script>
 
 <style is:global>
+  /* Brilho suave que acompanha o cursor em todas as páginas */
+  .ambient {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: radial-gradient(
+      34rem circle at var(--ax, 70%) var(--ay, 20%),
+      rgba(37, 99, 235, 0.14),
+      transparent 70%
+    );
+  }
+
+  /* Anel que segue o cursor (só com mouse) */
+  .cursor {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1100;
+    width: 2.2rem;
+    height: 2.2rem;
+    margin: -1.1rem 0 0 -1.1rem;
+    border: 1px solid rgba(248, 250, 252, 0.55);
+    border-radius: 50%;
+    opacity: 0;
+    pointer-events: none;
+    transition:
+      opacity 0.25s ease,
+      width 0.25s ease,
+      height 0.25s ease,
+      margin 0.25s ease,
+      background-color 0.25s ease,
+      border-color 0.25s ease;
+  }
+
+  @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+    .cursor {
+      display: block;
+    }
+  }
+
+  .cursor.is-on {
+    opacity: 1;
+  }
+
+  .cursor.is-link {
+    width: 3.6rem;
+    height: 3.6rem;
+    margin: -1.8rem 0 0 -1.8rem;
+    border-color: var(--color-blue);
+    background-color: rgba(37, 99, 235, 0.18);
+  }
+
   @media (prefers-reduced-motion: no-preference) {
     /* Troca de página: a antiga some desfocando, a nova é revelada de cima para baixo */
     ::view-transition-old(root) {

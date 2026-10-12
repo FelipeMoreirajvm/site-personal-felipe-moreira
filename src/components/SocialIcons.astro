@@ -17,7 +17,7 @@ const { links } = Astro.props;
           const icon = getIcon(link.platform);
           const highlighted = isHighlighted(link);
           return (
-            <li class="pop" style={`--delay: ${1.5 + index * 0.1}s`}>
+            <li class="pop" style={`--delay: ${1.2 + index * 0.1}s`}>
               <a
                 class:list={[
                   "icon-btn",
@@ -29,6 +29,7 @@ const { links } = Astro.props;
                 rel="noopener noreferrer"
                 aria-label={`${link.platform} (abre em nova aba)`}
                 title={link.platform}
+                data-magnet
               >
                 {icon ? (
                   <svg
@@ -74,10 +75,13 @@ const { links } = Astro.props;
     color: var(--color-text);
     font-weight: 700;
     text-decoration: none;
+    /* puxada magnética em direção ao cursor */
+    translate: var(--tx, 0px) var(--ty, 0px);
     transition:
       background-color 0.25s ease,
       border-color 0.25s ease,
-      transform 0.25s ease;
+      transform 0.25s ease,
+      translate 0.15s ease-out;
   }
 
   .icon-btn.text {

@@ -18,11 +18,12 @@ const buttons = [
 <div class="entries">
   {
     buttons.map((button, index) => (
-      <div class="item rise" style={`--delay: ${1.05 + index * 0.12}s`}>
+      <div class="item rise" style={`--delay: ${0.85 + index * 0.12}s`}>
         <a
           class={`entry ${button.theme}`}
           href={button.href}
           transition:name={button.transitionName}
+          data-magnet
         >
           <span>{button.label}</span>
           <svg class="arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
@@ -55,10 +56,13 @@ const buttons = [
     font-size: 1.05rem;
     font-weight: 700;
     text-decoration: none;
+    /* puxada magnética em direção ao cursor */
+    translate: var(--tx, 0px) var(--ty, 0px);
     transition:
       background-color 0.25s ease,
       color 0.25s ease,
-      transform 0.25s ease;
+      transform 0.25s ease,
+      translate 0.15s ease-out;
   }
 
   .entry.software {

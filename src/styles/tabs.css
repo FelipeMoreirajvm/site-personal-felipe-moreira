@@ -211,3 +211,35 @@ a.card:hover {
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
 }
+/* ===== Reação ao cursor: luz que acompanha o mouse nos cartões e no cabeçalho ===== */
+.card,
+.tab-hero {
+  position: relative;
+  overflow: hidden;
+}
+
+.card::after,
+.tab-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(
+    16rem circle at var(--sx, 50%) var(--sy, 50%),
+    color-mix(in srgb, var(--accent) 26%, transparent),
+    transparent 70%
+  );
+  transition: opacity 0.3s ease;
+}
+
+.card:hover::after,
+.tab-hero:hover::after {
+  opacity: 1;
+}
+
+.tab-hero > * {
+  position: relative;
+  z-index: 1;
+}
