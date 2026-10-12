@@ -1,107 +1,167 @@
-// Reações ao cursor. Só roda com mouse e sem "reduzir movimento".
+// Campo de pontos que reage ao cursor.
+// Só roda com mouse e sem "reduzir movimento".
 const canReact =
   window.matchMedia("(hover: hover) and (pointer: fine)").matches &&
   window.matchMedia("(prefers-reduced-motion: no-preference)").matches;
 
 if (canReact) {
-  const pointer = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
-  const smooth = { x: pointer.x, y: pointer.y }; // segue o mouse com suavidade
-  const ringPos = { x: pointer.x, y: pointer.y }; // anel do cursor, com mais atraso
-  let inside = false;
+  const SPACING = 30; // distância entre os pontos, em pixels
+  const RADIUS = 190; // alcance do cursor
+  const PUSH = 24; // quanto os pontos se afastam do cursor
+  const FOLLOW = 0.16; // suavidade do retorno (menor = mais lento)
+  const WAVE_SPEED = 720; // velocidade da onda do clique, em pixels por segundo
+  const WAVE_TIME = 1.2; // duração da onda, em segundos
+
+  interface Wave {
+    x: number;
+    y: number;
+    start: number;
+  }
+
+  let canvas: HTMLCanvasElement | null = null;
+  let ctx: CanvasRenderingContext2D | null = null;
+  let color = "#2563eb";
+  let width = 0;
+  let height = 0;
+  let cols = 0;
+  let rows = 0;
+  let offsetX = new Float32Array(0);
+  let offsetY = new Float32Array(0);
+  let glow = new Float32Array(0);
+
+  const pointer = { x: 0, y: 0, inside: false };
+  const smooth = { x: 0, y: 0 };
+  const waves: Wave[] = [];
   let frame = 0;
 
-  let hero: HTMLElement | null = null;
-  let cursor: HTMLElement | null = null;
-  let ambient: HTMLElement | null = null;
-  let letters: HTMLElement[] = [];
-  let magnets: HTMLElement[] = [];
+  const resize = () => {
+    if (!canvas || !ctx) return;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    width = window.innerWidth;
+    height = window.innerHeight;
+    canvas.width = Math.round(width * dpr);
+    canvas.height = Math.round(height * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-  const clamp = (value: number, limit: number) =>
-    Math.max(-limit, Math.min(limit, value));
+    cols = Math.ceil(width / SPACING) + 1;
+    rows = Math.ceil(height / SPACING) + 1;
+    const total = cols * rows;
+    offsetX = new Float32Array(total);
+    offsetY = new Float32Array(total);
+    glow = new Float32Array(total);
+  };
 
-  const render = () => {
-    if (cursor) {
-      cursor.style.transform = `translate3d(${ringPos.x}px, ${ringPos.y}px, 0)`;
-    }
-
-    if (ambient) {
-      ambient.style.setProperty("--ax", `${smooth.x}px`);
-      ambient.style.setProperty("--ay", `${smooth.y}px`);
-    }
-
-    if (hero) {
-      const box = hero.getBoundingClientRect();
-      hero.style.setProperty("--mx", `${smooth.x - box.left}px`);
-      hero.style.setProperty("--my", `${smooth.y - box.top}px`);
-      hero.style.setProperty("--px", ((smooth.x / window.innerWidth - 0.5) * 2).toFixed(3));
-      hero.style.setProperty("--py", ((smooth.y / window.innerHeight - 0.5) * 2).toFixed(3));
-    }
-
-    // Letras do nome: sobem e brilham quando o cursor chega perto
-    for (const letter of letters) {
-      let near = 0;
-      if (inside) {
-        const lift = Number(letter.dataset.near ?? 0) * 12;
-        const box = letter.getBoundingClientRect();
-        const dx = smooth.x - (box.left + box.width / 2);
-        const dy = smooth.y - (box.top + box.height / 2 + lift);
-        near = Math.max(0, 1 - Math.hypot(dx, dy) / 220);
-      }
-      letter.dataset.near = near.toFixed(3);
-      letter.style.setProperty("--near", near.toFixed(3));
-    }
-
-    // Botões magnéticos
-    for (const magnet of magnets) {
-      let tx = 0;
-      let ty = 0;
-      if (inside) {
-        const prevX = Number(magnet.dataset.tx ?? 0);
-        const prevY = Number(magnet.dataset.ty ?? 0);
-        const box = magnet.getBoundingClientRect();
-        const dx = smooth.x - (box.left + box.width / 2 - prevX);
-        const dy = smooth.y - (box.top + box.height / 2 - prevY);
-        const strength = Math.max(0, 1 - Math.hypot(dx, dy) / 130);
-        tx = clamp(dx * 0.35 * strength, 10);
-        ty = clamp(dy * 0.35 * strength, 10);
-      }
-      magnet.dataset.tx = tx.toFixed(2);
-      magnet.dataset.ty = ty.toFixed(2);
-      magnet.style.setProperty("--tx", `${tx}px`);
-      magnet.style.setProperty("--ty", `${ty}px`);
-    }
+  // Usa a cor de destaque da página (azul no início e no software, dourado no filmmaker)
+  const readColor = () => {
+    const themed = document.querySelector<HTMLElement>("[data-theme]");
+    const value = themed
+      ? getComputedStyle(themed).getPropertyValue("--accent").trim()
+      : "";
+    color = value || "#2563eb";
   };
 
   const schedule = () => {
     if (!frame) frame = requestAnimationFrame(tick);
   };
 
-  const tick = () => {
+  const tick = (now: number) => {
     frame = 0;
-    smooth.x += (pointer.x - smooth.x) * 0.12;
-    smooth.y += (pointer.y - smooth.y) * 0.12;
-    ringPos.x += (pointer.x - ringPos.x) * 0.25;
-    ringPos.y += (pointer.y - ringPos.y) * 0.25;
+    if (!ctx) return;
 
-    render();
+    smooth.x += (pointer.x - smooth.x) * 0.22;
+    smooth.y += (pointer.y - smooth.y) * 0.22;
 
-    const settled =
-      Math.abs(pointer.x - smooth.x) < 0.4 &&
-      Math.abs(pointer.y - smooth.y) < 0.4 &&
-      Math.abs(pointer.x - ringPos.x) < 0.4 &&
-      Math.abs(pointer.y - ringPos.y) < 0.4;
+    // descarta ondas antigas
+    for (let w = waves.length - 1; w >= 0; w--) {
+      if ((now - waves[w].start) / 1000 > WAVE_TIME) waves.splice(w, 1);
+    }
 
-    if (!settled) schedule();
+    ctx.clearRect(0, 0, width, height);
+    ctx.fillStyle = color;
+
+    // continua rodando enquanto algo ainda estiver se movendo
+    let busy =
+      waves.length > 0 ||
+      Math.abs(pointer.x - smooth.x) > 0.5 ||
+      Math.abs(pointer.y - smooth.y) > 0.5;
+
+    for (let row = 0; row < rows; row++) {
+      for (let col = 0; col < cols; col++) {
+        const i = row * cols + col;
+        const baseX = col * SPACING;
+        const baseY = row * SPACING;
+        let targetX = 0;
+        let targetY = 0;
+        let near = 0;
+
+        // empurrão do cursor
+        if (pointer.inside) {
+          const dx = baseX - smooth.x;
+          const dy = baseY - smooth.y;
+          const dist = Math.hypot(dx, dy);
+          if (dist < RADIUS) {
+            const k = 1 - dist / RADIUS;
+            const push = k * k * PUSH;
+            const inv = dist || 1;
+            targetX += (dx / inv) * push;
+            targetY += (dy / inv) * push;
+            near = k;
+          }
+        }
+
+        // ondas dos cliques
+        for (const wave of waves) {
+          const age = (now - wave.start) / 1000;
+          const dx = baseX - wave.x;
+          const dy = baseY - wave.y;
+          const dist = Math.hypot(dx, dy);
+          const band = Math.abs(dist - age * WAVE_SPEED);
+          if (band < 90) {
+            const k = (1 - band / 90) * Math.max(0, 1 - age / WAVE_TIME);
+            const inv = dist || 1;
+            targetX += (dx / inv) * k * 20;
+            targetY += (dy / inv) * k * 20;
+            near = Math.max(near, k);
+          }
+        }
+
+        if (
+          Math.abs(targetX - offsetX[i]) > 0.05 ||
+          Math.abs(targetY - offsetY[i]) > 0.05 ||
+          Math.abs(near - glow[i]) > 0.01
+        ) {
+          busy = true;
+        }
+
+        offsetX[i] += (targetX - offsetX[i]) * FOLLOW;
+        offsetY[i] += (targetY - offsetY[i]) * FOLLOW;
+        glow[i] += (near - glow[i]) * 0.14;
+
+        if (glow[i] > 0.02) {
+          ctx.globalAlpha = Math.min(1, glow[i]) * 0.9;
+          ctx.beginPath();
+          ctx.arc(
+            baseX + offsetX[i],
+            baseY + offsetY[i],
+            1 + glow[i] * 2.2,
+            0,
+            Math.PI * 2,
+          );
+          ctx.fill();
+        }
+      }
+    }
+
+    ctx.globalAlpha = 1;
+    if (busy) schedule();
   };
 
-  // Procura de novo os elementos a cada página (o site troca de página sem recarregar)
+  // Procura o canvas de novo a cada página (o site troca de página sem recarregar)
   const refresh = () => {
-    hero = document.querySelector<HTMLElement>("[data-hero]");
-    cursor = document.querySelector<HTMLElement>("[data-cursor]");
-    ambient = document.querySelector<HTMLElement>("[data-ambient]");
-    letters = Array.from(document.querySelectorAll<HTMLElement>(".letter"));
-    magnets = Array.from(document.querySelectorAll<HTMLElement>("[data-magnet]"));
-    hero?.style.setProperty("--lit", inside ? "1" : "0");
+    canvas = document.querySelector<HTMLCanvasElement>("[data-field]");
+    ctx = canvas?.getContext("2d") ?? null;
+    readColor();
+    resize();
     schedule();
   };
 
@@ -110,37 +170,28 @@ if (canReact) {
     (event) => {
       pointer.x = event.clientX;
       pointer.y = event.clientY;
-
-      if (!inside) {
-        inside = true;
-        smooth.x = ringPos.x = event.clientX;
-        smooth.y = ringPos.y = event.clientY;
-        cursor?.classList.add("is-on");
-        hero?.style.setProperty("--lit", "1");
+      if (!pointer.inside) {
+        pointer.inside = true;
+        smooth.x = event.clientX;
+        smooth.y = event.clientY;
       }
-
-      const target = event.target as Element | null;
-      cursor?.classList.toggle("is-link", Boolean(target?.closest("a, button, [data-magnet]")));
-
-      // Luz que acompanha o cursor dentro dos cartões das abas
-      const card = target?.closest<HTMLElement>(".card, .tab-hero");
-      if (card) {
-        const box = card.getBoundingClientRect();
-        card.style.setProperty("--sx", `${event.clientX - box.left}px`);
-        card.style.setProperty("--sy", `${event.clientY - box.top}px`);
-      }
-
       schedule();
     },
     { passive: true },
   );
 
+  window.addEventListener("pointerdown", (event) => {
+    waves.push({ x: event.clientX, y: event.clientY, start: performance.now() });
+    schedule();
+  });
+
   document.documentElement.addEventListener("mouseleave", () => {
-    inside = false;
-    pointer.x = window.innerWidth / 2;
-    pointer.y = window.innerHeight / 2;
-    cursor?.classList.remove("is-on");
-    hero?.style.setProperty("--lit", "0");
+    pointer.inside = false;
+    schedule();
+  });
+
+  window.addEventListener("resize", () => {
+    resize();
     schedule();
   });
 

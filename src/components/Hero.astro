@@ -17,11 +17,8 @@ const words = profile.name.split(" ").map((word, wordIndex) => ({
 }));
 ---
 
-<section class="hero" id="inicio" data-hero>
-  <div class="parallax" aria-hidden="true">
-    <div class="bg bg-settle"></div>
-    <div class="bg-lit"></div>
-  </div>
+<section class="hero" id="inicio">
+  <div class="bg bg-settle" aria-hidden="true"></div>
 
   <SiteNav />
 
@@ -69,45 +66,12 @@ const words = profile.name.split(" ").map((word, wordIndex) => ({
     background-color: var(--color-bg);
   }
 
-  /* Camada de fundo que se move com o cursor (profundidade) */
-  .parallax {
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    transform: translate3d(
-        calc(var(--px, 0) * -14px),
-        calc(var(--py, 0) * -10px),
-        0
-      )
-      scale(1.06);
-  }
-
   .bg {
     position: absolute;
     inset: 0;
+    z-index: -1;
     background:
       var(--overlay), var(--hero-image) center / cover no-repeat;
-  }
-
-  /* Lanterna: a imagem fica mais clara ao redor do cursor */
-  .bg-lit {
-    position: absolute;
-    inset: 0;
-    background:
-      linear-gradient(rgba(16, 24, 40, 0.38), rgba(16, 24, 40, 0.38)),
-      var(--hero-image) center / cover no-repeat;
-    -webkit-mask-image: radial-gradient(
-      circle 15rem at var(--mx, 50%) var(--my, 50%),
-      #000 0%,
-      transparent 72%
-    );
-    mask-image: radial-gradient(
-      circle 15rem at var(--mx, 50%) var(--my, 50%),
-      #000 0%,
-      transparent 72%
-    );
-    opacity: var(--lit, 0);
-    transition: opacity 0.5s ease;
   }
 
   /* Nome, botões e ícones ocupam a coluna inteira, alinhados com o menu */
@@ -119,7 +83,6 @@ const words = profile.name.split(" ").map((word, wordIndex) => ({
   .main {
     align-self: center;
     padding-block: 2rem;
-    translate: calc(var(--px, 0) * 10px) calc(var(--py, 0) * 6px);
   }
 
   h1 {
@@ -142,17 +105,8 @@ const words = profile.name.split(" ").map((word, wordIndex) => ({
     font-weight: 800;
   }
 
-  /* As letras reagem ao cursor: sobem, crescem e brilham em azul */
   .letter {
     display: inline-block;
-    translate: 0 calc(var(--near, 0) * -12px);
-    scale: calc(1 + var(--near, 0) * 0.06);
-    text-shadow: 0 0 calc(var(--near, 0) * 26px)
-      rgba(37, 99, 235, calc(var(--near, 0) * 0.9));
-    transition:
-      translate 0.2s ease-out,
-      scale 0.2s ease-out,
-      text-shadow 0.2s ease-out;
   }
 
   .social {
