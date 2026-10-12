@@ -7,36 +7,30 @@ interface Props {
 
 const { profile } = Astro.props;
 
-// Separa o nome em palavras e letras para animar uma a uma
+// Primeiro nome fino, sobrenome grosso. Cada letra é animada uma a uma.
 let counter = 0;
-const words = profile.name
-  .split(" ")
-  .map((word) => [...word].map((letter) => ({ letter, index: counter++ })));
+const words = profile.name.split(" ").map((word, wordIndex) => ({
+  bold: wordIndex > 0,
+  letters: [...word].map((letter) => ({ letter, index: counter++ })),
+}));
 ---
 
-<section class="hero">
-  <div class="portrait" data-tilt>
-    <span class="ring ring-static" aria-hidden="true"></span>
-    <span class="ring ring-pulse" aria-hidden="true"></span>
-    <img
-      class="photo"
-      src={profile.photo.src}
-      srcset={profile.photo.srcset}
-      sizes="(min-width: 48rem) 20rem, 11rem"
-      alt={profile.photo.alt}
-      width="560"
-      height="560"
-      loading="eager"
-      fetchpriority="high"
-    />
-  </div>
+<section class="hero" id="inicio">
+  <nav class="topbar rise" style="--delay: 0.1s" aria-label="Principal">
+    <ul>
+      <li><a href="/" aria-current="page">Início</a></li>
+      <li><a href="#sobre">Sobre</a></li>
+      <li><a href="/engenheiro-de-software">Engenheiro de Software</a></li>
+      <li><a href="/filmmaker">Filmmaker</a></li>
+    </ul>
+  </nav>
 
-  <div class="text">
+  <div class="content">
     <h1 aria-label={profile.name}>
       {
         words.map((word) => (
-          <span class="word" aria-hidden="true">
-            {word.map((item) => (
+          <span class={`word ${word.bold ? "bold" : "light"}`} aria-hidden="true">
+            {word.letters.map((item) => (
               <span class="letter" style={`--i: ${item.index}`}>
                 {item.letter}
               </span>
@@ -45,60 +39,99 @@ const words = profile.name
         ))
       }
     </h1>
+
     <p class="profession rise" style="--delay: 0.9s">{profile.profession}</p>
-    <p class="bio rise" style="--delay: 1.05s">{profile.bio}</p>
-    <div class="actions rise" style="--delay: 1.2s">
-      <slot />
+
+    <div class="entries rise" style="--delay: 1.05s">
+      <a
+        class="pill"
+        href="/engenheiro-de-software"
+        transition:name="panel-software"
+      >
+        Engenheiro de Software
+      </a>
+      <a class="pill" href="/filmmaker" transition:name="panel-film">
+        Filmmaker
+      </a>
     </div>
+  </div>
+
+  <div class="social rise" style="--delay: 1.2s">
+    <slot />
   </div>
 </section>
 
 <style>
   .hero {
+    /* Para trocar a imagem de fundo, mude só esta linha (veja as instruções) */
+    --hero-image: url("/hero-bg.jpg");
+    --overlay: linear-gradient(
+      90deg,
+      rgba(16, 24, 40, 0.94) 0%,
+      rgba(16, 24, 40, 0.62) 45%,
+      rgba(16, 24, 40, 0.15) 100%
+    );
+
     display: grid;
-    grid-template-columns: 1fr;
-    gap: var(--space-sm);
-    align-items: center;
+    grid-template-rows: auto 1fr auto;
+    min-height: 100vh;
+    min-height: 100svh;
+    background:
+      var(--overlay), var(--hero-image) center / cover no-repeat,
+      var(--color-bg);
   }
 
-  .portrait {
-    position: relative;
-    justify-self: center;
-    width: min(11rem, 46vw);
-    aspect-ratio: 1;
-    margin: 1.4rem;
-    transform: perspective(800px) rotateX(var(--rx, 0deg))
-      rotateY(var(--ry, 0deg));
-    transition: transform 0.25s ease-out;
-  }
-
-  .ring {
-    position: absolute;
-    border-radius: 50%;
-    border: 1px solid var(--color-blue);
-    pointer-events: none;
-  }
-
-  .ring-static {
-    inset: -0.85rem;
-    opacity: 0.4;
-  }
-
-  .ring-pulse {
-    inset: -0.15rem;
-    opacity: 0;
-  }
-
-  .photo {
+  /* Cada bloco fica alinhado à mesma coluna central da página */
+  .hero > * {
     width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    object-fit: cover;
-    /* contorno fino em azul elétrico, separado da foto por uma folga escura */
-    box-shadow:
-      0 0 0 4px var(--color-bg),
-      0 0 0 6px var(--color-blue),
-      0 18px 36px rgba(0, 0, 0, 0.35);
+    max-width: var(--content-width);
+    margin-inline: auto;
+    padding-inline: var(--space-md);
+  }
+
+  /* Menu superior */
+  .topbar {
+    padding-top: 1.5rem;
+    padding-bottom: 1rem;
+  }
+
+  .topbar ul {
+    display: flex;
+    gap: 1.75rem;
+    margin: 0;
+    padding: 0.25rem 0;
+    list-style: none;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .topbar a {
+    display: inline-block;
+    padding: 0.35rem 0;
+    border-bottom: 2px solid transparent;
+    color: var(--color-text);
+    font-size: 0.92rem;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: border-color 0.25s ease;
+  }
+
+  .topbar a:hover,
+  .topbar a[aria-current="page"] {
+    border-bottom-color: var(--color-blue);
+  }
+
+  /* Nome e cargo */
+  .content {
+    align-self: center;
+    padding-block: 2rem;
+  }
+
+  h1 {
+    font-size: clamp(3.4rem, 13vw, 7.5rem);
+    line-height: 0.95;
+    text-transform: uppercase;
   }
 
   .word {
@@ -108,61 +141,69 @@ const words = profile.name
     margin-bottom: -0.12em;
   }
 
+  .word.light {
+    font-size: 0.55em;
+    font-weight: 300;
+    letter-spacing: 0.08em;
+  }
+
+  .word.bold {
+    font-weight: 800;
+  }
+
   .letter {
     display: inline-block;
   }
 
-  h1 {
-    color: var(--color-text);
-    font-size: clamp(3rem, 13vw, 6.5rem);
-    font-weight: 800;
-    line-height: 0.95;
-  }
-
   .profession {
-    margin-top: var(--space-md);
-    color: var(--color-gold);
-    font-size: 1.2rem;
-    font-weight: 700;
-  }
-
-  .bio {
-    margin-top: var(--space-sm);
-    max-width: 28rem;
+    margin-top: 1.25rem;
     color: var(--color-text-soft);
+    font-size: 0.95rem;
+    font-weight: 500;
+    letter-spacing: 0.22em;
   }
 
-  .actions {
+  /* Botões de contorno */
+  .entries {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
     margin-top: var(--space-md);
   }
 
-  @media (min-width: 48rem) {
-    .hero {
-      grid-template-columns: 1.2fr 0.8fr;
-      gap: 3rem;
-    }
+  .pill {
+    padding: 0.7rem 1.6rem;
+    border: 1px solid rgba(248, 250, 252, 0.7);
+    border-radius: 999px;
+    background-color: rgba(16, 24, 40, 0.35);
+    color: var(--color-text);
+    font-weight: 600;
+    text-decoration: none;
+    transition:
+      background-color 0.25s ease,
+      border-color 0.25s ease,
+      transform 0.25s ease;
+  }
 
-    .portrait {
-      order: 2;
-      width: min(20rem, 100%);
-      margin: 2rem;
+  .pill:hover {
+    border-color: var(--color-blue);
+    background-color: var(--color-blue);
+    transform: translateY(-2px);
+  }
+
+  /* Ícones das redes, embaixo à esquerda */
+  .social {
+    padding-top: 1rem;
+    padding-bottom: 2rem;
+  }
+
+  @media (max-width: 47.99rem) {
+    .hero {
+      --overlay: linear-gradient(
+        180deg,
+        rgba(16, 24, 40, 0.75),
+        rgba(16, 24, 40, 0.92)
+      );
     }
   }
 </style>
-
-<script>
-  // Inclinação bem suave da foto acompanhando o mouse (só em computador)
-  const portrait = document.querySelector<HTMLElement>("[data-tilt]");
-  const canTilt = window.matchMedia(
-    "(prefers-reduced-motion: no-preference) and (hover: hover)",
-  ).matches;
-
-  if (portrait && canTilt) {
-    window.addEventListener("pointermove", (event) => {
-      const x = event.clientX / window.innerWidth - 0.5;
-      const y = event.clientY / window.innerHeight - 0.5;
-      portrait.style.setProperty("--ry", `${x * 8}deg`);
-      portrait.style.setProperty("--rx", `${-y * 8}deg`);
-    });
-  }
-</script>
